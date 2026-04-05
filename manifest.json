@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Anti-LinkedIn Extension Scan",
+  "version": "1.0",
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["https://www.linkedin.com/*"],
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "rules",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  },
+  "content_scripts": [{
+    "matches": ["https://www.linkedin.com/*"],
+    "js": ["inject.js"],
+    "run_at": "document_start",
+    "all_frames": true
+  }],
+  "web_accessible_resources": [{
+    "resources": ["block.js"],
+    "matches": ["https://www.linkedin.com/*"]
+  }]
+}
