@@ -1,7 +1,7 @@
 // background.js
 chrome.webNavigation.onCommitted.addListener((details) => {
     if (details.frameId !== 0) return;
-    
+
     chrome.scripting.executeScript({
         target: { tabId: details.tabId },
         world: "MAIN",
