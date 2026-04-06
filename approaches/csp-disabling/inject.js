@@ -2,7 +2,7 @@
 new MutationObserver((mutations) => {
     for (const m of mutations) {
         for (const node of m.addedNodes) {
-            if (node.tagName === 'META' && 
+            if (node.tagName === 'META' &&
                 node.httpEquiv === 'Content-Security-Policy') {
                 node.remove();
                 console.log('🛡️ [Anti-LI-Scan] CSP meta removed');
