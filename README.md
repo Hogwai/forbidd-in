@@ -1,6 +1,6 @@
 # forbidd-in
 
-Chrome extension that prevents LinkedIn from detecting and fingerprinting browser extensions.
+Ways of preventing LinkedIn from detecting and fingerprinting your browser extensions. Available as a Chrome extension or userscript.
 
 ## What LinkedIn does
 
@@ -54,6 +54,12 @@ No CSP modification needed. Chrome's privileged API bypasses CSP entirely. 2 fil
 > **⚠️ WARNING: This approach is a security risk.** This approach strips all CSP headers from LinkedIn pages, leaving you completely exposed to XSS, malicious injections from other extensions, and any script that would normally be blocked by CSP. It is kept here as a reference to document how the original version worked. Use the main-world approach instead.
 
 The original approach. Strips all `Content-Security-Policy` headers via `declarativeNetRequest` rules, then injects inline scripts and onclick handlers to set the spoofed values. 5 files, more complex.
+
+## Userscript
+
+`forbidd-in.user.js` at the root of the repo is the same logic as the main-world approach, packaged for Tampermonkey or Violentmonkey. Works on any browser that supports userscript managers. `@grant none` ensures the script runs in the page's realm, not in a sandbox.
+
+<a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
 
 ## Loading an approach
 
