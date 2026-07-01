@@ -44,6 +44,8 @@ Four strategies are available, each in its own approach folder.
 
 ### Strategy A: Webpack intercept (recommended)
 
+[`approaches/webpack-intercept/`](approaches/webpack-intercept/)
+
 Intercepts LinkedIn's webpack 5 chunk loading to neuter the detection module before it registers.
 
 LinkedIn loads its extension detection code as **webpack chunk 418** via a JSONP mechanism. A `Proxy` on the global `webpackChunk_ember_auto_import_` array intercepts the `push()` call when chunk 418 arrives and replaces the detection module (29424) with a no-op. Only the `a()`, `s()`, `c()`, `l()`, `h()`, and `p()` functions become empty stubs. Everything else on LinkedIn continues to work.
@@ -53,6 +55,8 @@ Zero side effects on `appEnvironment` or `userAgent`.
 <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
 
 ### Strategy B: Fetch intercept
+
+[`approaches/fetch-intercept/`](approaches/fetch-intercept/)
 
 Blocks the probing layer by intercepting `window.fetch` in MAIN world at `document_start`.
 
@@ -68,6 +72,8 @@ LinkedIn's own `ActionInterceptor` wraps `window.fetch` into a closure at init t
 
 ### Strategy C: DNR block tracking
 
+[`approaches/dnr-block-tracking/`](approaches/dnr-block-tracking/) (extension only; requires `declarativeNetRequest` API)
+
 Blocks the exfiltration of detection data at the network level using `declarativeNetRequest` rules.
 
 Instead of preventing LinkedIn from *collecting* extension IDs, this strategy prevents it from *sending* them anywhere. `declarativeNetRequest` rules block outgoing requests to known LinkedIn tracking endpoints: `trackingApiService/track`, `trackO11yApi/trackO11y`, `/li/track`, and `/sensorCollect/`.
@@ -78,9 +84,9 @@ The detection code still runs (probes fire, DOM scan executes), but every attemp
 
 **Use case:** Standalone last line of defense, or layered with Strategy B for full coverage without property spoofing.
 
-- Extension: `approaches/dnr-block-tracking/` (extension only; requires `declarativeNetRequest` API)
-
 ### Strategy D: Property spoofing
+
+[`approaches/main-world/`](approaches/main-world/)
 
 The extension makes `a()` or `s()` return false by spoofing browser properties at `document_start`. This short-circuits all downstream detection: ID probing and DOM scanning never execute.
 
