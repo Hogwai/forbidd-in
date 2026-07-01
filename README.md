@@ -50,8 +50,7 @@ LinkedIn loads its extension detection code as **webpack chunk 418** via a JSONP
 
 Zero side effects on `appEnvironment` or `userAgent`.
 
-- Extension: `approaches/webpack-intercept/`
-- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js"><code>forbidd-in-webpack-intercept.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
+<a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
 
 ### Strategy B: Fetch intercept
 
@@ -65,8 +64,7 @@ LinkedIn's own `ActionInterceptor` wraps `window.fetch` into a closure at init t
 
 **Trade-off:** Less complete than webpack-intercept, but trivially simple and zero side effects on any other LinkedIn functionality.
 
-- Extension: `approaches/fetch-intercept/`
-- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-fetch-intercept.user.js"><code>forbidd-in-fetch-intercept.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-fetch-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
+<a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-fetch-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
 
 ### Strategy C: DNR block tracking
 
@@ -93,10 +91,9 @@ Two properties are spoofed:
 
 Either one alone is sufficient, but `appEnvironment` has side effects (LinkedIn uses it as an SSR flag in other modules) and `userAgent` spoofing may affect feature detection by non-malicious scripts.
 
-- Extension: `approaches/main-world/`
-- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js"><code>forbidd-in.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
+<a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
 
-> **Original legacy approach: `approaches/csp-disabling/`**  Strips CSP headers via `declarativeNetRequest` and injects scripts into the page. ⚠️ **Security risk:** removes all CSP protection, leaving you exposed to XSS. Kept as reference only.
+> ⚠️ **Security risk:** This approach strips CSP headers via `declarativeNetRequest` and injects scripts into the page. It removes all CSP protection, leaving you exposed to XSS. Kept as reference only.
 
 ## Loading an approach
 
