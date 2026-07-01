@@ -44,7 +44,7 @@ Four strategies are available, each in its own approach folder.
 
 ### Strategy A: Webpack intercept (recommended)
 
-[`approaches/webpack-intercept/`](approaches/webpack-intercept/)
+[`webpack-intercept`](approaches/webpack-intercept/)
 
 Intercepts LinkedIn's webpack 5 chunk loading to neuter the detection module before it registers.
 
@@ -56,7 +56,7 @@ Zero side effects on `appEnvironment` or `userAgent`.
 
 ### Strategy B: Fetch intercept
 
-[`approaches/fetch-intercept/`](approaches/fetch-intercept/)
+[`fetch-intercept`](approaches/fetch-intercept/)
 
 Blocks the probing layer by intercepting `window.fetch` in MAIN world at `document_start`.
 
@@ -72,7 +72,9 @@ LinkedIn's own `ActionInterceptor` wraps `window.fetch` into a closure at init t
 
 ### Strategy C: DNR block tracking
 
-[`approaches/dnr-block-tracking/`](approaches/dnr-block-tracking/) (extension only; requires `declarativeNetRequest` API)
+[`dnr-block-tracking`](/approaches/dnr-block-tracking/)
+
+Only available as an extension only because it requires `declarativeNetRequest` API.
 
 Blocks the exfiltration of detection data at the network level using `declarativeNetRequest` rules.
 
