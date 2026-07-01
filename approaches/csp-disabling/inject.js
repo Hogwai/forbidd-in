@@ -5,7 +5,7 @@ new MutationObserver((mutations) => {
             if (node.tagName === 'META' &&
                 node.httpEquiv === 'Content-Security-Policy') {
                 node.remove();
-                console.log('🛡️ [Anti-LI-Scan] CSP meta removed');
+                console.log('[forbidd-in] CSP meta removed');
             }
         }
     }
@@ -14,7 +14,7 @@ new MutationObserver((mutations) => {
 // Le content script ISOLATED partage le DOM avec la page
 // On injecte un inline via un event handler DOM: ça s'exécute dans le realm de la page
 const div = document.createElement('div');
-div.setAttribute('onclick', 'window.appEnvironment = "node"; console.log("🛡️ [Anti-LI-Scan] onclick realm:", window.appEnvironment)');
+div.setAttribute('onclick', 'window.appEnvironment = "node"; console.log("[forbidd-in]onclick realm:", window.appEnvironment)');
 document.documentElement.prepend(div);
 div.click();
 div.remove();

@@ -13,7 +13,7 @@ chrome.webNavigation.onCommitted.addListener((details) => {
                 get() { return fakeUA; },
                 configurable: false
             });
-            console.log('🛡️ [Anti-LI-Scan] injected, UA =', navigator.userAgent);
+            console.log('[forbidd-in] injected, UA =', navigator.userAgent);
         }
     });
 }, { url: [{ hostContains: 'linkedin.com' }] });
