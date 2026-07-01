@@ -10,8 +10,8 @@
 // LinkedIn's ActionInterceptor captures window.fetch into a closure at init time.
 // Since this script runs at document_start (before any LinkedIn code loads),
 // the closure captures our overridden fetch, not the original. The call chain:
-//     probe → LinkedIn wrapper (closure holds our override)
-//          → our override → Promise.reject()
+//     probe calls LinkedIn wrapper (closure holds our override)
+//     which calls our override resulting in Promise.reject()
 //
 // Chrome's own blocking is insufficient: WAR (web accessible resources) files
 // like icons/fonts ARE accessible from chrome-extension:// even in pages.

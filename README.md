@@ -60,7 +60,7 @@ LinkedIn's extension ID probing (functions `c()`/`l()`) uses `fetch()` to reques
 
 LinkedIn's own `ActionInterceptor` wraps `window.fetch` into a closure at init time. Because our override is already in place before LinkedIn loads (MAIN world, `document_start`), the closure captures our rejecting override instead of the original `fetch`.
 
-**Limitation:** Only blocks the fetch-based probe path. The DOM scan (`h()`/`p()` → `SpectroscopyEvent`) still runs. In practice the DOM scan finds no extensions unless another extension injects `chrome-extension://` URLs into the page.
+**Limitation:** Only blocks the fetch-based probe path. The DOM scan (`h()`/`p()`: `SpectroscopyEvent`) still runs. In practice the DOM scan finds no extensions unless another extension injects `chrome-extension://` URLs into the page.
 
 **Trade-off:** Less complete than webpack-intercept, but trivially simple and zero side effects on any other LinkedIn functionality.
 
