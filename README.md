@@ -2,6 +2,16 @@
 
 Ways of preventing LinkedIn from detecting and fingerprinting your browser extensions. Available as a Chrome extension or userscript.
 
+As always, the best option is to **ditch Google Chrome** for a browser more respectful of your privacy:
+
+- [Mozilla Firefox](https://www.firefox.com/en-US/)
+- [Zen Browser](https://zen-browser.app/)
+- [Waterfox](https://www.waterfox.com/)
+
+LinkedIn's extension detection exploits Chrome specific APIs (`chrome-extension://` probing, webpack chunk interception). 
+
+Firefox and Firefox based browsers don't expose these vectors, making extension detection impractical.
+
 ## What LinkedIn does
 
 LinkedIn ships an extension detection system with three layers:
@@ -30,36 +40,63 @@ Walks the entire DOM tree looking for `chrome-extension://` strings in text node
 
 ## How forbidd-in defeats it
 
-The extension only needs to make `a()` or `s()` return false. This short-circuits all downstream detection: ID probing and DOM scanning never execute.
+Four strategies are available, each in its own approach folder.
+
+### Strategy A: Webpack intercept (recommended)
+
+Intercepts LinkedIn's webpack 5 chunk loading to neuter the detection module before it registers.
+
+LinkedIn loads its extension detection code as **webpack chunk 418** via a JSONP mechanism. A `Proxy` on the global `webpackChunk_ember_auto_import_` array intercepts the `push()` call when chunk 418 arrives and replaces the detection module (29424) with a no-op. Only the `a()`, `s()`, `c()`, `l()`, `h()`, and `p()` functions become empty stubs. Everything else on LinkedIn continues to work.
+
+Zero side effects on `appEnvironment` or `userAgent`.
+
+- Extension: `approaches/webpack-intercept/`
+- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js"><code>forbidd-in-webpack-intercept.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-webpack-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
+
+### Strategy B: Fetch intercept
+
+Blocks the probing layer by intercepting `window.fetch` in MAIN world at `document_start`.
+
+LinkedIn's extension ID probing (functions `c()`/`l()`) uses `fetch()` to request `chrome-extension://<id>/<file>` URLs. By overriding `window.fetch` before any LinkedIn code runs, this approach rejects those probes. The list stays empty and the `AedEvent` tracking payload contains no valid extension IDs.
+
+LinkedIn's own `ActionInterceptor` wraps `window.fetch` into a closure at init time. Because our override is already in place before LinkedIn loads (MAIN world, `document_start`), the closure captures our rejecting override instead of the original `fetch`.
+
+**Limitation:** Only blocks the fetch-based probe path. The DOM scan (`h()`/`p()` → `SpectroscopyEvent`) still runs. In practice the DOM scan finds no extensions unless another extension injects `chrome-extension://` URLs into the page.
+
+**Trade-off:** Less complete than webpack-intercept, but trivially simple and zero side effects on any other LinkedIn functionality.
+
+- Extension: `approaches/fetch-intercept/`
+- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-fetch-intercept.user.js"><code>forbidd-in-fetch-intercept.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in-fetch-intercept.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
+
+### Strategy C: DNR block tracking
+
+Blocks the exfiltration of detection data at the network level using `declarativeNetRequest` rules.
+
+Instead of preventing LinkedIn from *collecting* extension IDs, this strategy prevents it from *sending* them anywhere. `declarativeNetRequest` rules block outgoing requests to known LinkedIn tracking endpoints: `trackingApiService/track`, `trackO11yApi/trackO11y`, `/li/track`, and `/sensorCollect/`.
+
+The detection code still runs (probes fire, DOM scan executes), but every attempt to exfiltrate the results is blocked by the browser before it reaches the network. Confirmed working against `AedEvent` and `SpectroscopyEvent` payloads.
+
+**Limitation:** Detection code runs locally on every idle cycle and DOM mutation, which is wasteful. Combined with the fetch-intercept approach (Strategy B) it covers both the collection and exfiltration layers with no side effects.
+
+**Use case:** Standalone last line of defense, or layered with Strategy B for full coverage without property spoofing.
+
+- Extension: `approaches/dnr-block-tracking/` (extension only; requires `declarativeNetRequest` API)
+
+### Strategy D: Property spoofing
+
+The extension makes `a()` or `s()` return false by spoofing browser properties at `document_start`. This short-circuits all downstream detection: ID probing and DOM scanning never execute.
 
 Two properties are spoofed:
 
-1. `window.appEnvironment = "node"` makes `a()` return `false`
-2. `navigator.userAgent` has `Chrome/` replaced with `Chromium/`, making `s()` return `false` since `indexOf("Chrome")` no longer matches
+1. `window.appEnvironment = "node"` (makes `a()` return `false`)
+2. `navigator.userAgent` replaces `Chrome/` with `Chromium/` (makes `s()` return `false` since `indexOf("Chrome")` no longer matches)
 
-Either one alone is sufficient. Both are set for redundancy.
+Either one alone is sufficient, but `appEnvironment` has side effects (LinkedIn uses it as an SSR flag in other modules) and `userAgent` spoofing may affect feature detection by non-malicious scripts.
 
-## Approaches
+- Extension: `approaches/main-world/`
+- Userscript: <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js"><code>forbidd-in.user.js</code></a> <a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js" target="_blank"><img src="https://img.shields.io/badge/Install-181717?style=flat-square&logo=github&logoColor=white" alt="Install"></a>
 
-Two working approaches are provided. Each folder is a standalone loadable extension.
-
-### `approaches/main-world/` (recommended)
-
-Uses a content script declared with `"world": "MAIN"` in the manifest. Chrome injects the script directly into the page's JavaScript realm at `document_start`, before any LinkedIn code runs.
-
-No CSP modification needed. Chrome's privileged API bypasses CSP entirely. 2 files total (`manifest.json` + `main.js`). Simplest and safest approach.
-
-### `approaches/csp-disabling/`
-
-> **⚠️ WARNING: This approach is a security risk.** This approach strips all CSP headers from LinkedIn pages, leaving you completely exposed to XSS, malicious injections from other extensions, and any script that would normally be blocked by CSP. It is kept here as a reference to document how the original version worked. Use the main-world approach instead.
-
-The original approach. Strips all `Content-Security-Policy` headers via `declarativeNetRequest` rules, then injects inline scripts and onclick handlers to set the spoofed values. 5 files, more complex.
-
-## Userscript
-
-`forbidd-in.user.js` at the root of the repo is the same logic as the main-world approach, packaged for Tampermonkey or Violentmonkey. Works on any browser that supports userscript managers. `@grant none` ensures the script runs in the page's realm, not in a sandbox.
-
-<a href="https://github.com/Hogwai/forbidd-in/raw/main/forbidd-in.user.js" target="_blank"><img src="https://img.shields.io/badge/Install%20from-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Install from GitHub"></a>
+> **Original legacy approach: `approaches/csp-disabling/`**  Strips CSP headers via `declarativeNetRequest` and injects scripts into the page. ⚠️ **Security risk:** removes all CSP protection, leaving you exposed to XSS. Kept as reference only.
 
 ## Loading an approach
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "forbidd-in",
-  "version": "1.0",
+  "version": "0.1.0",
   "permissions": ["declarativeNetRequest"],
   "host_permissions": ["https://www.linkedin.com/*"],
   "declarative_net_request": {

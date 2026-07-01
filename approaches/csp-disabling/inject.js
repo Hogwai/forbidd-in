@@ -12,7 +12,7 @@ new MutationObserver((mutations) => {
 }).observe(document.documentElement, { childList: true, subtree: true });
 
 // Le content script ISOLATED partage le DOM avec la page
-// On injecte un inline via un event handler DOM — ça s'exécute dans le realm de la page
+// On injecte un inline via un event handler DOM: ça s'exécute dans le realm de la page
 const div = document.createElement('div');
 div.setAttribute('onclick', 'window.appEnvironment = "node"; console.log("🛡️ [Anti-LI-Scan] onclick realm:", window.appEnvironment)');
 document.documentElement.prepend(div);

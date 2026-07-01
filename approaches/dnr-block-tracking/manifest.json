@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "forbidd-in (DNR block tracking)",
+  "version": "0.1.0",
+  "description": "Blocks LinkedIn detection data exfiltration endpoints via declarativeNetRequest",
+  "host_permissions": ["https://www.linkedin.com/*"],
+  "permissions": ["declarativeNetRequest"],
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "ruleset_1",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  }
+}

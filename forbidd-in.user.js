@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        forbidd-in
 // @namespace   https://github.com/Hogwai/forbidd-in
-// @version     2.0
+// @version     0.1.0
 // @description Prevents LinkedIn from scanning and fingerprinting browser extensions
 // @author      Hogwai
 // @match       https://www.linkedin.com/*
@@ -16,3 +16,5 @@ Object.defineProperty(Navigator.prototype, 'userAgent', {
 });
 
 window.appEnvironment = "node";
+
+console.log('[forbidd-in] Property spoofing active: appEnvironment and UA spoofed');

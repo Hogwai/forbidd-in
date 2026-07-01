@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "forbidd-in (fetch-intercept)",
+  "version": "0.1.0",
+  "description": "Intercepts window.fetch in MAIN world to fail chrome-extension:// probes from LinkedIn",
+  "host_permissions": ["https://www.linkedin.com/*"],
+  "content_scripts": [{
+    "matches": ["https://www.linkedin.com/*"],
+    "js": ["main.js"],
+    "run_at": "document_start",
+    "world": "MAIN",
+    "all_frames": true
+  }]
+}
