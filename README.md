@@ -105,9 +105,15 @@ Either one alone is sufficient, but `appEnvironment` has side effects (LinkedIn 
 
 ## Loading an approach
 
+### As a Chrome extension
+
 1. Open `chrome://extensions/`
 2. Enable Developer mode
 3. Click "Load unpacked" and select one of the `approaches/` folders
+
+### As a userscript
+
+Install a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/), then click one of the **Install from GitHub** buttons above to install the script.
 
 ## Disclaimer
 
