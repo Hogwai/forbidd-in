@@ -113,7 +113,7 @@ Either one alone is sufficient, but `appEnvironment` has side effects (LinkedIn 
 
 ### As a userscript
 
-Install a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/), then click one of the **Install from GitHub** buttons above to install the script.
+Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/) or [Tampermonkey](https://www.tampermonkey.net/), then click one of the **Install from GitHub** buttons above to install the script.
 
 ## Disclaimer
 
