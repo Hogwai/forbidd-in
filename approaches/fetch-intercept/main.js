@@ -1,10 +1,12 @@
 // == forbidd-in: fetch-intercept approach ==
 // Intercepts window.fetch in MAIN world to reject chrome-extension:// URLs.
 //
-// LinkedIn probes installed extensions via fetch() of chrome-extension://<id>/<file>
-// (functions c()/l() in webpack chunk 418, module 29424). By rejecting these
-// requests before they reach the network, the probe list remains empty and the
-// AedEvent tracking payload is never sent with valid extension IDs.
+// LinkedIn probes installed extensions by calling fetch() on
+// chrome-extension://<id>/<file> URLs (functions c()/l() in its webpack
+// detection module). The chunk and module IDs change on every deploy, so
+// don't rely on them. Rejecting the probes before they reach the network
+// keeps the probe list empty, so the AedEvent tracking payload never contains
+// a valid extension ID.
 //
 // Why this works even though LinkedIn wraps fetch in its own interceptors:
 // LinkedIn's ActionInterceptor captures window.fetch into a closure at init time.
@@ -34,10 +36,14 @@ let blockedCount = 0;
 const originalFetch = window.fetch.bind(window);
 
 window.fetch = function (input, init) {
-    const url = typeof input === 'string' ? input : input instanceof Request ? input.url : '';
+    const url = typeof input === 'string'
+        ? input
+        : (input && typeof input.url === 'string' ? input.url : '');
     if (url.startsWith(EXTENSION_PREFIX)) {
         blockedCount++;
-        console.log(`[forbidd-in] Fetch chrome-extension:// blocked (#${blockedCount}): ${url.slice(0, 80)}`);
+        if (blockedCount === 1) {
+            console.warn('[forbidd-in] Fetch chrome-extension:// blocked (further blocks are silent)');
+        }
         return Promise.reject(new TypeError('Failed to fetch'));
     }
     return originalFetch(input, init);

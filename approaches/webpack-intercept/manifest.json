@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "forbidd-in",
-  "version": "0.1.0",
-  "description": "Empêche LinkedIn de scanner les extensions Chrome via interception webpack",
+  "version": "0.2.0",
+  "description": "Neutralizes LinkedIn's webpack extension-detection module regardless of chunk/module IDs",
   "host_permissions": ["https://www.linkedin.com/*"],
   "content_scripts": [{
     "matches": ["https://www.linkedin.com/*"],

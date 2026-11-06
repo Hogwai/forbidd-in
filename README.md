@@ -48,7 +48,13 @@ Four strategies are available, each in its own approach folder.
 
 Intercepts LinkedIn's webpack 5 chunk loading to neuter the detection module before it registers.
 
-LinkedIn loads its extension detection code as **webpack chunk 418** via a JSONP mechanism. A `Proxy` on the global `webpackChunk_ember_auto_import_` array intercepts the `push()` call when chunk 418 arrives and replaces the detection module (29424) with a no-op. Only the `a()`, `s()`, `c()`, `l()`, `h()`, and `p()` functions become empty stubs. Everything else on LinkedIn continues to work.
+LinkedIn ships its extension detection code inside its main webpack bundle via a JSONP mechanism. A `Proxy` on the global `webpackChunk_ember_auto_import_` array inspects every chunk passed to `push()`.
+
+The detection module is matched by content, not by ID.
+LinkedIn rotates chunk and module IDs on each deployment (the module has been observed as chunk 418 / module 29424, then chunk 905 / module 75023, then chunk 585 / module 9269).
+ The script looks for the only module that defines the `chrome-extension://` prefix together with the `fetchExtensions` / `scanDOMForPrefix` exports and replaces it with a no-op that keeps the same public export surface. Only the detection functions (`a()`, `s()`, `c()`, `l()`, `h()`, `p()`) become empty stubs. Everything else on LinkedIn continues to work.
+
+As defense in depth, `fetch()` calls to `chrome-extension://` are rejected too, so probes fail even if LinkedIn changes the chunk loading mechanism again.
 
 Zero side effects on `appEnvironment` or `userAgent`.
 
@@ -114,6 +120,21 @@ Either one alone is sufficient, but `appEnvironment` has side effects (LinkedIn 
 ### As a userscript
 
 Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/) or [Tampermonkey](https://www.tampermonkey.net/), then click one of the **Install from GitHub** buttons above to install the script.
+
+## Development
+
+The userscripts at the repository root are generated from the approach sources:
+
+| Generated file | Source |
+| --- | --- |
+| `forbidd-in.user.js` | `approaches/main-world/main.js` |
+| `forbidd-in-fetch-intercept.user.js` | `approaches/fetch-intercept/main.js` |
+| `forbidd-in-webpack-intercept.user.js` | `approaches/webpack-intercept/main.js` |
+
+```bash
+node build.mjs          # generate the userscripts
+node build.mjs --check  # verify they are in sync
+```
 
 ## Disclaimer
 
